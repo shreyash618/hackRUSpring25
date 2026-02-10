@@ -18,8 +18,9 @@
 }
 
 .checklist {
-    list-style-type: none; /* Removes bullet points */
+    list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
 .task-item {
@@ -42,38 +43,39 @@
     color: gray;
 }
 
-.difficulty {
-    font-size: 14px;
-    color: blue;
-    margin-left: 5px;
-}
-
 .empty-tasks-message {
     text-align: center;
     color: #999;
     font-size: 15px;
     font-style: italic;
-    padding: 20px 16px;
+    padding: 16px;
     margin: 0;
 }
 
-/* Section headings for Today / Upcoming */
-.section-heading {
-    font-size: 16px;
-    font-weight: 700;
-    color: #5d4037;
-    margin: 16px 0 8px;
+/* Section heading row: heading on left, coins on right */
+.section-heading-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 20px;
     padding-bottom: 6px;
     border-bottom: 2px solid #e0e0e0;
 }
 
-.today-heading {
+.section-heading {
+    font-size: 16px;
+    font-weight: 700;
     color: #888;
+    margin: 0;
+    padding: 0;
+    border: none;
 }
 
-.upcoming-heading {
-    color: #888;
-    margin-top: 24px;
+.section-coins {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffa726;
+    white-space: nowrap;
 }
 
 /* Upcoming task items (no checkbox, greyed out slightly) */
@@ -96,35 +98,15 @@
     align-items: center;
 }
 
-/* Overdue section */
-.overdue-heading {
-    color: #e53935;
-}
-
-.overdue-task span {
-    color: #c62828;
-}
-
+/* Overdue date badge */
 .overdue-date {
     font-size: 11px;
     font-weight: 700;
     color: #fff;
-    background-color: #e53935;
+    background-color: #bbb;
     padding: 2px 8px;
     border-radius: 10px;
     margin-left: 8px;
     margin-right: 4px;
-    white-space: nowrap;
-}
-
-/* Coin worth badge */
-.coin-worth {
-    font-size: 11px;
-    font-weight: 700;
-    color: #fff;
-    background-color: #ffa726;
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-left: 8px;
     white-space: nowrap;
 }

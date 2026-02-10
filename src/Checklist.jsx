@@ -103,37 +103,19 @@ const Checklist = () => {
     // Get coin reward for a task
     const coinWorth = (difficulty) => (difficulty === "easy" ? 10 : 20);
 
+    // Sum total coins earnable from a list of tasks
+    const totalCoins = (tasks) => tasks.reduce((sum, t) => sum + coinWorth(t.task_difficulty), 0);
+
     return (
         <div className="checklist-container">
             <h2 className="checklist-title">To-Do List</h2>
             <p className="money-display">Coins: <span>{money}</span> 🪙</p>
 
-            {/* Overdue Tasks */}
-            <h3 className="section-heading overdue-heading">Overdue</h3>
-            {overdueTasks.length === 0 ? (
-                <p className="empty-tasks-message">No overdue tasks!</p>
-            ) : (
-                <ul className="checklist">
-                    {overdueTasks.map((task) => (
-                        <li key={task.id} className={`task-item overdue-task ${task.task_completed ? "completed" : ""}`}>
-                            <input
-                                type="checkbox"
-                                checked={task.task_completed}
-                                onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
-                                className="checkbox"
-                            />
-                            <span>
-                                {task.task_name}
-                                <span className="overdue-date">{formatDate(task.task_date)}</span>
-                                <span className="coin-worth">+{coinWorth(task.task_difficulty)} coins</span>
-                            </span>
-                        </li>
-                    ))}
-                </ul>
-            )}
-
             {/* Today's Tasks */}
-            <h3 className="section-heading today-heading">Today's Tasks</h3>
+            <div className="section-heading-row">
+                <h3 className="section-heading">Today's Tasks</h3>
+                {todayTasks.length > 0 && <span className="section-coins">{totalCoins(todayTasks)} coins</span>}
+            </div>
             {todayTasks.length === 0 ? (
                 <p className="empty-tasks-message">No tasks for today. Enjoy your day!</p>
             ) : (
@@ -146,17 +128,17 @@ const Checklist = () => {
                                 onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
                                 className="checkbox"
                             />
-                            <span>
-                                {task.task_name}
-                                <span className="coin-worth">+{coinWorth(task.task_difficulty)} coins</span>
-                            </span>
+                            <span>{task.task_name}</span>
                         </li>
                     ))}
                 </ul>
             )}
 
             {/* Upcoming Tasks */}
-            <h3 className="section-heading upcoming-heading">Upcoming Tasks</h3>
+            <div className="section-heading-row">
+                <h3 className="section-heading">Upcoming Tasks</h3>
+                {upcomingTasks.length > 0 && <span className="section-coins">{totalCoins(upcomingTasks)} coins</span>}
+            </div>
             {upcomingTasks.length === 0 ? (
                 <p className="empty-tasks-message">No upcoming tasks scheduled.</p>
             ) : (
@@ -164,9 +146,32 @@ const Checklist = () => {
                     {upcomingTasks.map((task) => (
                         <li key={task.id} className="task-item upcoming-task">
                             <span className="upcoming-date">{formatDate(task.task_date)}</span>
+                            <span>{task.task_name}</span>
+                        </li>
+                    ))}
+                </ul>
+            )}
+
+            {/* Overdue Tasks */}
+            <div className="section-heading-row">
+                <h3 className="section-heading">Overdue</h3>
+                {overdueTasks.length > 0 && <span className="section-coins">{totalCoins(overdueTasks)} coins</span>}
+            </div>
+            {overdueTasks.length === 0 ? (
+                <p className="empty-tasks-message">No overdue tasks!</p>
+            ) : (
+                <ul className="checklist">
+                    {overdueTasks.map((task) => (
+                        <li key={task.id} className={`task-item ${task.task_completed ? "completed" : ""}`}>
+                            <input
+                                type="checkbox"
+                                checked={task.task_completed}
+                                onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
+                                className="checkbox"
+                            />
                             <span>
                                 {task.task_name}
-                                <span className="coin-worth">+{coinWorth(task.task_difficulty)} coins</span>
+                                <span className="overdue-date">{formatDate(task.task_date)}</span>
                             </span>
                         </li>
                     ))}
