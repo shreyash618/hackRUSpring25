@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect, useRef } from 'react';
+import { io } from 'socket.io-client';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CalenderComponent.css';
@@ -37,6 +38,13 @@ const CalendarComponent = () => {
 
     useEffect(() => {
         fetchTasks();
+
+        const socket = io(API_URL);
+        socket.on("task_added", () => fetchTasks());
+        socket.on("task_updated", () => fetchTasks());
+        socket.on("task_deleted", () => fetchTasks());
+
+        return () => socket.disconnect();
     }, []);
 
     // Close popup when clicking outside

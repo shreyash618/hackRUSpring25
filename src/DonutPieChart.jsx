@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import axios from "axios";
+import { io } from "socket.io-client";
 import "chart.js/auto";
 import "./DonutPieChart.css";
 import { API_URL } from "./config"; 
@@ -10,20 +11,28 @@ const DonutPieChart = () => {
   const [uncompletedTasks, setUncompletedTasks] = useState(0);
   const [totalTasks, setTotalTasks] = useState(0);
 
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/tasks/today`);
+      const tasks = response.data;
+      const completed = tasks.filter((task) => task.task_completed).length;
+      setCompletedTasks(completed);
+      setUncompletedTasks(tasks.length - completed);
+      setTotalTasks(tasks.length);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/tasks/today`);
-        const tasks = response.data;
-        const completed = tasks.filter((task) => task.task_completed).length;
-        setCompletedTasks(completed);
-        setUncompletedTasks(tasks.length - completed);
-        setTotalTasks(tasks.length);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
     fetchTasks();
+
+    const socket = io(API_URL);
+    socket.on("task_added", () => fetchTasks());
+    socket.on("task_updated", () => fetchTasks());
+    socket.on("task_deleted", () => fetchTasks());
+
+    return () => socket.disconnect();
   }, []);
 
   const isEmpty = totalTasks === 0;

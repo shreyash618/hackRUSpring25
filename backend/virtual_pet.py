@@ -57,6 +57,36 @@ def get_todays_tasks():
         } for task in tasks
     ])
 
+# Get overdue tasks (before today, not completed)
+@app.route('/tasks/overdue', methods=['GET'])
+def get_overdue_tasks():
+    today = date.today().strftime('%Y-%m-%d')
+    tasks = Task.query.filter(Task.task_date < today, Task.task_completed == False).order_by(Task.task_date).all()
+    return jsonify([
+        {
+            'id': task.id,
+            'task_name': task.task_name,
+            'task_date': task.task_date,
+            'task_difficulty': task.task_difficulty,
+            'task_completed': task.task_completed
+        } for task in tasks
+    ])
+
+# Get upcoming tasks (after today)
+@app.route('/tasks/upcoming', methods=['GET'])
+def get_upcoming_tasks():
+    today = date.today().strftime('%Y-%m-%d')
+    tasks = Task.query.filter(Task.task_date > today).order_by(Task.task_date).all()
+    return jsonify([
+        {
+            'id': task.id,
+            'task_name': task.task_name,
+            'task_date': task.task_date,
+            'task_difficulty': task.task_difficulty,
+            'task_completed': task.task_completed
+        } for task in tasks
+    ])
+
 # Get all tasks
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
@@ -127,16 +157,19 @@ def complete_task():
 
     if task:
         task.task_completed = completed
+        reward = 10 if task.task_difficulty == "easy" else 20
+
+        if completed:
+            # Earn coins for completing
+            user.money += reward
+        else:
+            # Lose coins for unchecking, but never go below 0
+            user.money = max(user.money - reward, 0)
+
         db.session.commit()
 
-        # Update money if the task is being completed
-        if completed:
-            money_increase = 5 if task.task_difficulty == "easy" else 15
-            user.money += money_increase
-            db.session.commit()
-
-            # Emit updated money balance to all clients
-            socketio.emit("money_updated", user.money, namespace='/', broadcast=True)
+        # Emit updated money balance to all clients
+        socketio.emit("money_updated", user.money, namespace='/', broadcast=True)
 
         socketio.emit('task_updated', {
             'id': task.id,
@@ -145,6 +178,22 @@ def complete_task():
 
         return jsonify({"message": "Task updated successfully", "new_money": user.money}), 200
     return jsonify({"error": "Task not found"}), 404
+
+# Spend money (used by pet feeding)
+@app.route('/money/spend', methods=['POST'])
+def spend_money():
+    data = request.json
+    amount = data.get("amount", 0)
+    user = User.query.first()
+
+    if user.money < amount:
+        return jsonify({"error": "Not enough coins"}), 400
+
+    user.money = max(user.money - amount, 0)
+    db.session.commit()
+
+    socketio.emit("money_updated", user.money, namespace='/', broadcast=True)
+    return jsonify({"money": user.money}), 200
 
 # Delete a task
 @app.route('/delete/<int:id>', methods=['DELETE'])

@@ -5,20 +5,38 @@ import "./Checklist.css"; // Importing the CSS file
 import { API_URL } from "./config";
 
 const Checklist = () => {
-    const [tasks, setTasks] = useState([]);
-    const [money, setMoney] = useState(5); // Default starting money
+    const [todayTasks, setTodayTasks] = useState([]);
+    const [overdueTasks, setOverdueTasks] = useState([]);
+    const [upcomingTasks, setUpcomingTasks] = useState([]);
+    const [money, setMoney] = useState(0);
 
-    // Fetch today's tasks
-    const fetchTasks = async () => {
+    const fetchTodayTasks = async () => {
         try {
             const response = await axios.get(`${API_URL}/tasks/today`);
-            setTasks(response.data);
+            setTodayTasks(response.data);
         } catch (error) {
-            console.error("Error fetching tasks:", error);
+            console.error("Error fetching today's tasks:", error);
         }
     };
 
-    // Fetch money from backend
+    const fetchOverdueTasks = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/tasks/overdue`);
+            setOverdueTasks(response.data);
+        } catch (error) {
+            console.error("Error fetching overdue tasks:", error);
+        }
+    };
+
+    const fetchUpcomingTasks = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/tasks/upcoming`);
+            setUpcomingTasks(response.data);
+        } catch (error) {
+            console.error("Error fetching upcoming tasks:", error);
+        }
+    };
+
     const fetchMoney = async () => {
         try {
             const response = await axios.get(`${API_URL}/money`);
@@ -28,68 +46,61 @@ const Checklist = () => {
         }
     };
 
-    // Function to mark a task as complete and earn money
     const toggleCheck = async (taskId, isCompleted, taskDifficulty) => {
         try {
-            // Optimistically update UI
-            setTasks(prevTasks =>
+            // Optimistically update both today and overdue lists
+            const updateList = (prevTasks) =>
                 prevTasks.map(task =>
                     task.id === taskId ? { ...task, task_completed: isCompleted } : task
-                )
-            );
+                );
+            setTodayTasks(updateList);
+            setOverdueTasks(updateList);
 
-            // Calculate money reward only when marking a task as completed
-            const moneyIncrease = isCompleted
-                ? taskDifficulty === "easy"
-                    ? 5
-                    : 15
-                : 0;
-
-            // Update task completion and earn money
             const response = await axios.post(`${API_URL}/tasks/complete`, {
                 task_id: taskId,
                 completed: isCompleted,
-                money: moneyIncrease, // Send money update to backend
             });
 
-            // Update money state based on response
             if (response.data.new_money !== undefined) {
                 setMoney(response.data.new_money);
             }
 
+            // Re-fetch overdue since completing removes it from that list
+            if (isCompleted) {
+                fetchOverdueTasks();
+            }
         } catch (error) {
             console.error("Error updating task:", error);
-            fetchTasks(); // Reload tasks if an error occurs
+            fetchTodayTasks();
+            fetchOverdueTasks();
         }
     };
 
-    // WebSocket connection to receive real-time updates
     useEffect(() => {
-        fetchTasks();
+        fetchTodayTasks();
+        fetchOverdueTasks();
+        fetchUpcomingTasks();
         fetchMoney();
 
         const socket = io(API_URL);
 
-        // Listen for new tasks
-        socket.on("task_added", (newTask) => {
-            setTasks(prevTasks => [...prevTasks, newTask]);
+        socket.on("task_added", () => {
+            fetchTodayTasks();
+            fetchOverdueTasks();
+            fetchUpcomingTasks();
         });
 
-        // Listen for task completion updates
-        socket.on("task_updated", (updatedTask) => {
-            setTasks(prevTasks =>
-                prevTasks.map(task =>
-                    task.id === updatedTask.id ? { ...task, task_completed: updatedTask.task_completed } : task
-                )
-            );
+        socket.on("task_updated", () => {
+            fetchTodayTasks();
+            fetchOverdueTasks();
         });
 
-        // Listen for task deletions
-        socket.on("task_deleted", (deletedTask) => {
-            setTasks(prevTasks => prevTasks.filter(task => task.id !== deletedTask.id));
+        socket.on("task_deleted", () => {
+            fetchTodayTasks();
+            fetchOverdueTasks();
+            fetchUpcomingTasks();
         });
 
-        // Listen for money updates from the backend
         socket.on("money_updated", (newMoney) => {
             setMoney(newMoney);
         });
@@ -97,15 +108,48 @@ const Checklist = () => {
         return () => socket.disconnect();
     }, []);
 
+    // Format date for display (e.g. "Feb 12")
+    const formatDate = (dateStr) => {
+        const d = new Date(dateStr + "T00:00:00");
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    };
+
     return (
         <div className="checklist-container">
             <h2 className="checklist-title">To-Do List</h2>
             <p className="money-display">Coins: <span>{money}</span> 🪙</p>
-            {tasks.length === 0 ? (
-                <p className="empty-tasks-message">No tasks added yet. Add a task above to get started!</p>
+
+            {/* Overdue Tasks */}
+            {overdueTasks.length > 0 && (
+                <>
+                    <h3 className="section-heading overdue-heading">Overdue</h3>
+                    <ul className="checklist">
+                        {overdueTasks.map((task) => (
+                            <li key={task.id} className="task-item overdue-task">
+                                <input
+                                    type="checkbox"
+                                    checked={task.task_completed}
+                                    onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
+                                    className="checkbox"
+                                />
+                                <span>
+                                    {task.task_name}
+                                    <span className="overdue-date">{formatDate(task.task_date)}</span>
+                                    <span className="difficulty">({task.task_difficulty})</span>
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            )}
+
+            {/* Today's Tasks */}
+            <h3 className="section-heading">Today's Tasks</h3>
+            {todayTasks.length === 0 ? (
+                <p className="empty-tasks-message">No tasks for today. Enjoy your day!</p>
             ) : (
                 <ul className="checklist">
-                    {tasks.map((task) => (
+                    {todayTasks.map((task) => (
                         <li key={task.id} className={`task-item ${task.task_completed ? "completed" : ""}`}>
                             <input
                                 type="checkbox"
@@ -113,6 +157,21 @@ const Checklist = () => {
                                 onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
                                 className="checkbox"
                             />
+                            <span>{task.task_name} <span className="difficulty">({task.task_difficulty})</span></span>
+                        </li>
+                    ))}
+                </ul>
+            )}
+
+            {/* Upcoming Tasks */}
+            <h3 className="section-heading upcoming-heading">Upcoming Tasks</h3>
+            {upcomingTasks.length === 0 ? (
+                <p className="empty-tasks-message">No upcoming tasks scheduled.</p>
+            ) : (
+                <ul className="checklist upcoming-list">
+                    {upcomingTasks.map((task) => (
+                        <li key={task.id} className="task-item upcoming-task">
+                            <span className="upcoming-date">{formatDate(task.task_date)}</span>
                             <span>{task.task_name} <span className="difficulty">({task.task_difficulty})</span></span>
                         </li>
                     ))}

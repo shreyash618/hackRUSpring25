@@ -53,6 +53,62 @@
     color: #999;
     font-size: 15px;
     font-style: italic;
-    padding: 32px 16px;
+    padding: 20px 16px;
     margin: 0;
+}
+
+/* Section headings for Today / Upcoming */
+.section-heading {
+    font-size: 16px;
+    font-weight: 700;
+    color: #4CAF50;
+    margin: 16px 0 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.upcoming-heading {
+    color: #888;
+    margin-top: 24px;
+}
+
+/* Upcoming task items (no checkbox, greyed out slightly) */
+.upcoming-task {
+    color: #666;
+}
+
+.upcoming-date {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background-color: #ffb74d;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    margin-right: 4px;
+}
+
+.upcoming-list .task-item {
+    align-items: center;
+}
+
+/* Overdue section */
+.overdue-heading {
+    color: #e53935;
+}
+
+.overdue-task span {
+    color: #c62828;
+}
+
+.overdue-date {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background-color: #e53935;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    margin-right: 4px;
+    white-space: nowrap;
 }
