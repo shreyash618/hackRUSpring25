@@ -8,6 +8,7 @@ import DonutPieChart from "./DonutPieChart";
 import Streak from "./Streaks";
 import { useState } from "react";
 import "./App.css";
+import { API_URL } from "./config";
 
 function App() {
   const [taskName, setTaskName] = useState("");
@@ -18,7 +19,7 @@ function App() {
     if (!taskName.trim() || !taskDate.trim() || !taskDifficulty.trim()) return;
 
     try {
-        const response = await fetch("http://127.0.0.1:5000/add", {
+        const response = await fetch(`${API_URL}/add`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -66,7 +67,7 @@ function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, se
     <div className='iframe-container'>
         <iframe
           className="game-iframe"
-          src="http://localhost:5173/game?iframe=true"
+          src="/game?iframe=true"
           title="Game Screen"
           frameBorder="0">  
         </iframe>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Streak.css";
+import { API_URL } from "./config";
 
 const Streak = () => {
   const [streak, setStreak] = useState(0);
@@ -8,7 +9,7 @@ const Streak = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/tasks");
+        const response = await axios.get(`${API_URL}/tasks`);
         const tasks = response.data;
 
         // Group tasks by date

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Doughnut } from "react-chartjs-2";
 import axios from "axios";
 import "chart.js/auto";
-import "./DonutPieChart.css"; 
+import "./DonutPieChart.css";
+import { API_URL } from "./config"; 
 
 const DonutPieChart = () => {
   const [completedTasks, setCompletedTasks] = useState(0);
@@ -11,7 +12,7 @@ const DonutPieChart = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5000/tasks/today");
+        const response = await axios.get(`${API_URL}/tasks/today`);
         const tasks = response.data;
         const completed = tasks.filter((task) => task.task_completed).length;
         setCompletedTasks(completed);

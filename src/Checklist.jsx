@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import "./Checklist.css"; // Importing the CSS file
+import { API_URL } from "./config";
 
 const Checklist = () => {
     const [tasks, setTasks] = useState([]);
@@ -10,7 +11,7 @@ const Checklist = () => {
     // Fetch today's tasks
     const fetchTasks = async () => {
         try {
-            const response = await axios.get("http://127.0.0.1:5000/tasks/today");
+            const response = await axios.get(`${API_URL}/tasks/today`);
             setTasks(response.data);
         } catch (error) {
             console.error("Error fetching tasks:", error);
@@ -20,7 +21,7 @@ const Checklist = () => {
     // Fetch money from backend
     const fetchMoney = async () => {
         try {
-            const response = await axios.get("http://127.0.0.1:5000/money");
+            const response = await axios.get(`${API_URL}/money`);
             setMoney(response.data.money);
         } catch (error) {
             console.error("Error fetching money:", error);
@@ -45,7 +46,7 @@ const Checklist = () => {
                 : 0;
 
             // Update task completion and earn money
-            const response = await axios.post("http://127.0.0.1:5000/tasks/complete", {
+            const response = await axios.post(`${API_URL}/tasks/complete`, {
                 task_id: taskId,
                 completed: isCompleted,
                 money: moneyIncrease, // Send money update to backend
@@ -67,7 +68,7 @@ const Checklist = () => {
         fetchTasks();
         fetchMoney();
 
-        const socket = io("http://127.0.0.1:5000");
+        const socket = io(API_URL);
 
         // Listen for new tasks
         socket.on("task_added", (newTask) => {

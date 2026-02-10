@@ -3,13 +3,14 @@ import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CalenderComponent.css';
+import { API_URL } from './config';
 
 const CalendarComponent = () => {
     const [tasks, setTasks] = useState({});
 
     const fetchTasks = async () => {
         try {
-            const response = await axios.get("http://127.0.0.1:5000/tasks");
+            const response = await axios.get(`${API_URL}/tasks`);
     
             const data = response.data; // Axios automatically parses JSON
             const formattedTasks = {};
