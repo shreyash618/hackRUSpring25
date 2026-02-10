@@ -128,7 +128,7 @@ const Checklist = () => {
                                 onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
                                 className="checkbox"
                             />
-                            <span>{task.task_name}</span>
+                            <span className="task-name-text">{task.task_name} <span className="difficulty">({task.task_difficulty})</span></span>
                         </li>
                     ))}
                 </ul>
@@ -142,11 +142,17 @@ const Checklist = () => {
             {upcomingTasks.length === 0 ? (
                 <p className="empty-tasks-message">No upcoming tasks scheduled.</p>
             ) : (
-                <ul className="checklist upcoming-list">
+                <ul className="checklist">
                     {upcomingTasks.map((task) => (
-                        <li key={task.id} className="task-item upcoming-task">
-                            <span className="upcoming-date">{formatDate(task.task_date)}</span>
-                            <span>{task.task_name}</span>
+                        <li key={task.id} className={`task-item ${task.task_completed ? "completed" : ""}`}>
+                            <input
+                                type="checkbox"
+                                checked={task.task_completed}
+                                onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
+                                className="checkbox"
+                            />
+                            <span className="task-name-text">{task.task_name} <span className="difficulty">({task.task_difficulty})</span></span>
+                            <span className="task-date-badge">{formatDate(task.task_date)}</span>
                         </li>
                     ))}
                 </ul>
@@ -169,10 +175,8 @@ const Checklist = () => {
                                 onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
                                 className="checkbox"
                             />
-                            <span>
-                                {task.task_name}
-                                <span className="overdue-date">{formatDate(task.task_date)}</span>
-                            </span>
+                            <span className="task-name-text">{task.task_name} <span className="difficulty">({task.task_difficulty})</span></span>
+                            <span className="task-date-badge">{formatDate(task.task_date)}</span>
                         </li>
                     ))}
                 </ul>
