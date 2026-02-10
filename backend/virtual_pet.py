@@ -1,5 +1,10 @@
+import eventlet
+eventlet.monkey_patch()
+
+import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.pool import NullPool
 from flask_cors import CORS
 from datetime import date
 from flask_socketio import SocketIO, emit
@@ -10,8 +15,10 @@ CORS(app, resources={r"/*": {"origins": "*"}})  # Enable CORS for frontend-backe
 socketio = SocketIO(app, cors_allowed_origins="*")  # Enable WebSocket support
 
 # Set up SQLite database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tasks.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'poolclass': NullPool}
 db = SQLAlchemy(app)
 
 # Define the Task model
