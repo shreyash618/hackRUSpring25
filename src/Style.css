@@ -1,17 +1,9 @@
-/* Fullscreen game */
-body, html {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-}
-
-/* Background */
+/* Fullscreen game - scoped to game container only */
 .game-container {
     position: relative;
     width: 100vw;
     height: 100vh;
+    min-height: 100vh;
     background-image: url('/background.png'); /* Set your background graphic */
     background-size: cover;
     background-position: center;
@@ -19,6 +11,7 @@ body, html {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    overflow: hidden; /* Only hide overflow within game container */
 }
 
 /* Money Display */
@@ -168,10 +161,10 @@ body, html {
     border: 0.5vw solid #6d6875;
 }
 
-/* 📱 Small Screen (max-width: 480px) - Shrink Everything */
+/* 📱 Small Screen (max-height: 600px) - Shrink Everything */
 @media (max-height: 600px) {
-    /* Reduce font sizes */
-    body {
+    /* Reduce font sizes within game container */
+    .game-container {
         font-size: 12px;
     }
 
