@@ -15,9 +15,12 @@ function App() {
   const [taskName, setTaskName] = useState("");
   const [taskDate, setTaskDate] = useState("");
   const [taskDifficulty, setTaskDifficulty] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
 
   const addTask = async () => {
     if (!taskName.trim() || !taskDate.trim() || !taskDifficulty.trim()) return;
+    if (isAdding) return;
+    setIsAdding(true);
 
     try {
         const response = await fetch(`${API_URL}/add`, {
@@ -40,6 +43,8 @@ function App() {
         }
     } catch (error) {
         console.error("Error adding task:", error);
+    } finally {
+        setIsAdding(false);
     }
 };
 
@@ -56,7 +61,7 @@ function App() {
           taskName={taskName} setTaskName={setTaskName}
           taskDate={taskDate} setTaskDate={setTaskDate}
           taskDifficulty={taskDifficulty} setTaskDifficulty={setTaskDifficulty}
-          addTask={addTask}
+          addTask={addTask} isAdding={isAdding}
           />} />
           <Route path="/game" element={<GamePage isIframe={false} />} />
           <Route path='/about' element={<About/>}/>
@@ -66,7 +71,7 @@ function App() {
   );
 }
 
-function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, setTaskDifficulty, addTask }){
+function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, setTaskDifficulty, addTask, isAdding }){
   return (
     <div className="main-container">
       {/* Pet iframe on left, title + task form stacked on right */}
@@ -110,7 +115,7 @@ function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, se
                 <option value="easy">Easy</option>
                 <option value="hard">Hard</option>
               </select>
-              <button onClick={addTask}>Add Task</button>
+              <button onClick={addTask} disabled={isAdding}>{isAdding ? "Adding..." : "Add Task"}</button>
             </div>
           </div>
         </div>

@@ -125,6 +125,11 @@ def add_task():
         if not task_name or not task_date or not task_difficulty:
             return jsonify({'error': 'Missing fields'}), 400
 
+        # Prevent duplicate tasks with same name and date
+        existing = Task.query.filter_by(task_name=task_name, task_date=task_date).first()
+        if existing:
+            return jsonify({'error': 'A task with this name already exists on that date'}), 409
+
         new_task = Task(task_name=task_name, task_date=task_date, task_difficulty=task_difficulty, task_completed=False)
         
         db.session.add(new_task)
@@ -136,7 +141,7 @@ def add_task():
             'task_date': task_date,
             'task_difficulty': task_difficulty,
             'task_completed': False
-        }, namespace='/', broadcast=True)
+        }, namespace='/')
 
         return jsonify({'message': 'Task added successfully!', 'task': {
             'id': new_task.id,
@@ -172,12 +177,12 @@ def complete_task():
         db.session.commit()
 
         # Emit updated money balance to all clients
-        socketio.emit("money_updated", user.money, namespace='/', broadcast=True)
+        socketio.emit("money_updated", user.money, namespace='/')
 
         socketio.emit('task_updated', {
             'id': task.id,
             'task_completed': completed
-        }, namespace='/', broadcast=True)
+        }, namespace='/')
 
         return jsonify({"message": "Task updated successfully", "new_money": user.money}), 200
     return jsonify({"error": "Task not found"}), 404
@@ -195,7 +200,7 @@ def spend_money():
     user.money = max(user.money - amount, 0)
     db.session.commit()
 
-    socketio.emit("money_updated", user.money, namespace='/', broadcast=True)
+    socketio.emit("money_updated", user.money, namespace='/')
     return jsonify({"money": user.money}), 200
 
 # Delete a task

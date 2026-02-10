@@ -109,7 +109,11 @@ const GamePage = () => {
       });
     } catch (error) {
       console.error("Error spending money:", error);
-      alert("Not enough coins!");
+      if (error.response && error.response.status === 400) {
+        alert("Not enough coins!");
+      } else {
+        alert("Something went wrong. Please try again.");
+      }
     }
   };
 
