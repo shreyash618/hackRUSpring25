@@ -111,23 +111,30 @@ function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, se
         </div>
       </section>
 
-      {/* Dashboard cards: Calendar, To-do list, countdown, progress, streak */}
+      {/* Dashboard cards: Left column (Calendar + Progress/Streak/Countdown), Right column (To-Do List) */}
       <section className="dashboard-grid">
+        {/* Left Column - Top: Calendar */}
         <div className="dashboard-card calendar-card">
           <h3 className="dashboard-card-title">Task Calendar</h3>
           <CalendarComponent />
         </div>
-        <div className="dashboard-card">
+        
+        {/* Left Column - Bottom Row: Progress, Streak, Countdown */}
+        <div className="bottom-row-wrapper">
+          <div className="dashboard-card progress-card">
+            <DonutPieChart />
+          </div>
+          <div className="dashboard-card streak-card">
+            <Streak />
+          </div>
+          <div className="dashboard-card countdown-card">
+            <EndOfDayCountdown />
+          </div>
+        </div>
+        
+        {/* Right Column - Full Height: To-Do List */}
+        <div className="dashboard-card checklist-card">
           <Checklist />
-        </div>
-        <div className="dashboard-card">
-          <EndOfDayCountdown />
-        </div>
-        <div className="dashboard-card">
-          <DonutPieChart />
-        </div>
-        <div className="dashboard-card">
-          <Streak />
         </div>
       </section>
     </div>

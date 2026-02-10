@@ -33,10 +33,16 @@
     bottom: 10%;
     text-align: center;
     animation: bounce 2s infinite; /* Make pet bounce slightly */
+    overflow: hidden; /* Crop the image */
+    height: auto;
 }
 
 .pet-container img {
     width: 30vw;
+    object-fit: cover;
+    object-position: center bottom; /* Focus on bottom, crop from top */
+    margin-top: -20%; /* Crop top portion - adjust this value to crop more/less */
+    display: block; /* Remove any inline spacing */
 }
 
 /* Food Shop */
