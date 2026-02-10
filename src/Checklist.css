@@ -61,10 +61,14 @@
 .section-heading {
     font-size: 16px;
     font-weight: 700;
-    color: #4CAF50;
+    color: #5d4037;
     margin: 16px 0 8px;
     padding-bottom: 6px;
     border-bottom: 2px solid #e0e0e0;
+}
+
+.today-heading {
+    color: #888;
 }
 
 .upcoming-heading {
@@ -110,5 +114,17 @@
     border-radius: 10px;
     margin-left: 8px;
     margin-right: 4px;
+    white-space: nowrap;
+}
+
+/* Coin worth badge */
+.coin-worth {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background-color: #ffa726;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
     white-space: nowrap;
 }

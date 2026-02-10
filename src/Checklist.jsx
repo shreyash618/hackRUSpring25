@@ -46,6 +46,13 @@ const Checklist = () => {
         }
     };
 
+    const refreshAll = () => {
+        fetchTodayTasks();
+        fetchOverdueTasks();
+        fetchUpcomingTasks();
+        fetchMoney();
+    };
+
     const toggleCheck = async (taskId, isCompleted, taskDifficulty) => {
         try {
             // Optimistically update both today and overdue lists
@@ -65,45 +72,24 @@ const Checklist = () => {
                 setMoney(response.data.new_money);
             }
 
-            // Re-fetch overdue since completing removes it from that list
-            if (isCompleted) {
-                fetchOverdueTasks();
-            }
+            // Always re-fetch everything after a toggle to stay in sync
+            refreshAll();
+            // Notify other components (calendar, chart, streak) to refresh
+            window.dispatchEvent(new Event("tasks-changed"));
         } catch (error) {
             console.error("Error updating task:", error);
-            fetchTodayTasks();
-            fetchOverdueTasks();
+            refreshAll();
         }
     };
 
     useEffect(() => {
-        fetchTodayTasks();
-        fetchOverdueTasks();
-        fetchUpcomingTasks();
-        fetchMoney();
+        refreshAll();
 
         const socket = io(API_URL);
-
-        socket.on("task_added", () => {
-            fetchTodayTasks();
-            fetchOverdueTasks();
-            fetchUpcomingTasks();
-        });
-
-        socket.on("task_updated", () => {
-            fetchTodayTasks();
-            fetchOverdueTasks();
-        });
-
-        socket.on("task_deleted", () => {
-            fetchTodayTasks();
-            fetchOverdueTasks();
-            fetchUpcomingTasks();
-        });
-
-        socket.on("money_updated", (newMoney) => {
-            setMoney(newMoney);
-        });
+        socket.on("task_added", () => refreshAll());
+        socket.on("task_updated", () => refreshAll());
+        socket.on("task_deleted", () => refreshAll());
+        socket.on("money_updated", (newMoney) => setMoney(newMoney));
 
         return () => socket.disconnect();
     }, []);
@@ -114,37 +100,40 @@ const Checklist = () => {
         return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
     };
 
+    // Get coin reward for a task
+    const coinWorth = (difficulty) => (difficulty === "easy" ? 10 : 20);
+
     return (
         <div className="checklist-container">
             <h2 className="checklist-title">To-Do List</h2>
             <p className="money-display">Coins: <span>{money}</span> 🪙</p>
 
             {/* Overdue Tasks */}
-            {overdueTasks.length > 0 && (
-                <>
-                    <h3 className="section-heading overdue-heading">Overdue</h3>
-                    <ul className="checklist">
-                        {overdueTasks.map((task) => (
-                            <li key={task.id} className="task-item overdue-task">
-                                <input
-                                    type="checkbox"
-                                    checked={task.task_completed}
-                                    onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
-                                    className="checkbox"
-                                />
-                                <span>
-                                    {task.task_name}
-                                    <span className="overdue-date">{formatDate(task.task_date)}</span>
-                                    <span className="difficulty">({task.task_difficulty})</span>
-                                </span>
-                            </li>
-                        ))}
-                    </ul>
-                </>
+            <h3 className="section-heading overdue-heading">Overdue</h3>
+            {overdueTasks.length === 0 ? (
+                <p className="empty-tasks-message">No overdue tasks!</p>
+            ) : (
+                <ul className="checklist">
+                    {overdueTasks.map((task) => (
+                        <li key={task.id} className={`task-item overdue-task ${task.task_completed ? "completed" : ""}`}>
+                            <input
+                                type="checkbox"
+                                checked={task.task_completed}
+                                onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
+                                className="checkbox"
+                            />
+                            <span>
+                                {task.task_name}
+                                <span className="overdue-date">{formatDate(task.task_date)}</span>
+                                <span className="coin-worth">+{coinWorth(task.task_difficulty)} coins</span>
+                            </span>
+                        </li>
+                    ))}
+                </ul>
             )}
 
             {/* Today's Tasks */}
-            <h3 className="section-heading">Today's Tasks</h3>
+            <h3 className="section-heading today-heading">Today's Tasks</h3>
             {todayTasks.length === 0 ? (
                 <p className="empty-tasks-message">No tasks for today. Enjoy your day!</p>
             ) : (
@@ -157,7 +146,10 @@ const Checklist = () => {
                                 onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
                                 className="checkbox"
                             />
-                            <span>{task.task_name} <span className="difficulty">({task.task_difficulty})</span></span>
+                            <span>
+                                {task.task_name}
+                                <span className="coin-worth">+{coinWorth(task.task_difficulty)} coins</span>
+                            </span>
                         </li>
                     ))}
                 </ul>
@@ -172,7 +164,10 @@ const Checklist = () => {
                     {upcomingTasks.map((task) => (
                         <li key={task.id} className="task-item upcoming-task">
                             <span className="upcoming-date">{formatDate(task.task_date)}</span>
-                            <span>{task.task_name} <span className="difficulty">({task.task_difficulty})</span></span>
+                            <span>
+                                {task.task_name}
+                                <span className="coin-worth">+{coinWorth(task.task_difficulty)} coins</span>
+                            </span>
                         </li>
                     ))}
                 </ul>

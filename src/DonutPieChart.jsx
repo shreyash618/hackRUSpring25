@@ -32,7 +32,14 @@ const DonutPieChart = () => {
     socket.on("task_updated", () => fetchTasks());
     socket.on("task_deleted", () => fetchTasks());
 
-    return () => socket.disconnect();
+    // Listen for local task changes (reliable fallback if sockets fail)
+    const handleTasksChanged = () => fetchTasks();
+    window.addEventListener("tasks-changed", handleTasksChanged);
+
+    return () => {
+      socket.disconnect();
+      window.removeEventListener("tasks-changed", handleTasksChanged);
+    };
   }, []);
 
   const isEmpty = totalTasks === 0;

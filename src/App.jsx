@@ -34,6 +34,7 @@ function App() {
         const data = await response.json();
         if (response.ok) {
             setTaskName(""); setTaskDate(""); setTaskDifficulty(""); // Clear input fields
+            window.dispatchEvent(new Event("tasks-changed")); // Notify all components
         } else {
             console.error(data.error);
         }

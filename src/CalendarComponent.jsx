@@ -44,7 +44,14 @@ const CalendarComponent = () => {
         socket.on("task_updated", () => fetchTasks());
         socket.on("task_deleted", () => fetchTasks());
 
-        return () => socket.disconnect();
+        // Listen for local task changes (reliable fallback if sockets fail)
+        const handleTasksChanged = () => fetchTasks();
+        window.addEventListener("tasks-changed", handleTasksChanged);
+
+        return () => {
+            socket.disconnect();
+            window.removeEventListener("tasks-changed", handleTasksChanged);
+        };
     }, []);
 
     // Close popup when clicking outside
@@ -93,15 +100,15 @@ const CalendarComponent = () => {
                                 handleTileClick(dateString, e);
                             }}
                         >
-                            {tasks[dateString].map((task, index) => (
-                                <span
-                                    key={index}
-                                    className="task-preview-text"
-                                    style={{ color: task.completed ? "gray" : "black" }}
-                                >
-                                    {truncate(task.text)}
-                                </span>
-                            ))}
+                            <span
+                                className="task-preview-text"
+                                style={{ color: tasks[dateString][0].completed ? "gray" : "black" }}
+                            >
+                                {truncate(tasks[dateString][0].text)}
+                            </span>
+                            {tasks[dateString].length > 1 && (
+                                <span className="task-preview-more">+{tasks[dateString].length - 1} more</span>
+                            )}
                         </div>
                     ) : null;
                 }}
