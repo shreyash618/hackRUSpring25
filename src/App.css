@@ -186,30 +186,7 @@ iframe {
   box-sizing: border-box; /* Ensure padding is included in width */
 }
 
-/* Hero title above pet */
-.hero-title {
-  text-align: center;
-  background-color: rgba(255, 255, 255, 0.8);
-  padding: 16px 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  max-width: 720px;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 0; /* Ensure it's not cut off at top */
-}
-
-.hero-heading {
-  margin: 0;
-  font-size: 2rem;
-}
-
-.hero-subtitle {
-  margin: 8px 0 0;
-  font-size: 1rem;
-}
-
-/* Pet + task form row */
+/* Pet + right column row */
 .iframe-layout {
   display: flex;
   flex-wrap: wrap;
@@ -232,16 +209,50 @@ iframe {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-.task-form-card {
+/* Right column: Title stacked on top of form */
+.right-column {
   flex: 0 1 360px;
   min-width: 280px;
-  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Hero title card */
+.hero-title {
+  text-align: center;
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+  padding: 24px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.35);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hero-heading {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.hero-subtitle {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Task form card */
+.task-form-card {
+  background-color: rgba(255, 255, 255, 0.92);
   border-radius: 16px;
   padding: 20px 24px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 1; /* Fill remaining space */
 }
 
 .task-form-heading {
@@ -305,6 +316,7 @@ iframe {
   font-size: 1.2rem;
   font-weight: 600;
   color: #2c3e50;
+  text-align: center;
 }
 
 /* Left Column - Top: Calendar */
@@ -328,14 +340,21 @@ iframe {
   font-family: inherit;
 }
 
-/* Bottom row wrapper - contains Progress, Streak, Countdown side by side */
+/* Bottom row wrapper - Progress on left, Streak+Countdown stacked on right */
 .bottom-row-wrapper {
   grid-column: 1; /* Left column */
   grid-row: 2; /* Bottom row */
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Three items: Progress, Streak, Countdown */
+  grid-template-columns: 1fr 1fr; /* Two columns: Progress | Streak+Countdown */
   gap: 20px;
-  align-items: stretch; /* Make all cards same height */
+  align-items: stretch; /* Make both columns same height */
+}
+
+/* Streak + Countdown stacked vertically */
+.streak-countdown-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 /* Right Column - Full Height: To-Do List */
@@ -344,20 +363,30 @@ iframe {
   grid-row: 1 / 3; /* Spans both rows */
   display: flex;
   flex-direction: column;
-  /* Match height to calendar + bottom row combined */
+  align-items: stretch;
+  justify-content: flex-start; /* Content starts at top */
   height: 100%;
   min-height: calc(400px + 200px + 20px); /* calendar height + bottom row height + gap */
 }
 
-/* Make bottom row cards match height and fill space */
-.progress-card,
-.streak-card,
-.countdown-card {
+/* Progress card fills its column */
+.progress-card {
   min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  flex: 1; /* Fill available height */
+}
+
+/* Streak and Countdown each take half the column height */
+.streak-card,
+.countdown-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  flex: 1;
 }
 
 @media (max-width: 768px) {
@@ -380,6 +409,10 @@ iframe {
   .streak-card,
   .countdown-card {
     min-height: auto;
+  }
+  
+  .streak-countdown-column {
+    flex-direction: column;
   }
   
   .calendar-card {

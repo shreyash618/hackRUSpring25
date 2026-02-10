@@ -68,15 +68,7 @@ function App() {
 function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, setTaskDifficulty, addTask }){
   return (
     <div className="main-container">
-      {/* Hero title above the pet / iframe */}
-      <section className="hero-title">
-        <h1 className="hero-heading">Go Go Puffle Care</h1>
-        <p className="hero-subtitle">
-          Complete real-life tasks to keep your virtual pet happy and healthy.
-        </p>
-      </section>
-
-      {/* Pet iframe + task form side by side */}
+      {/* Pet iframe on left, title + task form stacked on right */}
       <section className="iframe-layout">
         <div className="iframe-wrapper">
           <iframe
@@ -87,29 +79,38 @@ function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, se
           />
         </div>
 
-        <div className="task-form-card">
-          <h2 className="task-form-heading">Add a Task</h2>
-          <div className="task-form-container">
-            <input
-              type="text"
-              value={taskName}
-              onChange={(e) => setTaskName(e.target.value)}
-              placeholder="Task Name"
-            />
-            <input
-              type="date"
-              value={taskDate}
-              onChange={(e) => setTaskDate(e.target.value)}
-            />
-            <select
-              value={taskDifficulty}
-              onChange={(e) => setTaskDifficulty(e.target.value)}
-            >
-              <option value="">Select Difficulty</option>
-              <option value="easy">Easy</option>
-              <option value="hard">Hard</option>
-            </select>
-            <button onClick={addTask}>Add Task</button>
+        <div className="right-column">
+          <div className="hero-title">
+            <h1 className="hero-heading">Go Go Puffle Care</h1>
+            <p className="hero-subtitle">
+              Complete real-life tasks to keep your virtual pet happy and healthy.
+            </p>
+          </div>
+
+          <div className="task-form-card">
+            <h2 className="task-form-heading">Add a Task</h2>
+            <div className="task-form-container">
+              <input
+                type="text"
+                value={taskName}
+                onChange={(e) => setTaskName(e.target.value)}
+                placeholder="Task Name"
+              />
+              <input
+                type="date"
+                value={taskDate}
+                onChange={(e) => setTaskDate(e.target.value)}
+              />
+              <select
+                value={taskDifficulty}
+                onChange={(e) => setTaskDifficulty(e.target.value)}
+              >
+                <option value="">Select Difficulty</option>
+                <option value="easy">Easy</option>
+                <option value="hard">Hard</option>
+              </select>
+              <button onClick={addTask}>Add Task</button>
+            </div>
           </div>
         </div>
       </section>
@@ -122,16 +123,18 @@ function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, se
           <CalendarComponent />
         </div>
         
-        {/* Left Column - Bottom Row: Progress, Streak, Countdown (stacked vertically in separate cards) */}
+        {/* Left Column - Bottom Row: Progress on left, Streak+Countdown stacked on right */}
         <div className="bottom-row-wrapper">
           <div className="dashboard-card progress-card">
             <DonutPieChart />
           </div>
-          <div className="dashboard-card streak-card">
-            <Streak />
-          </div>
-          <div className="dashboard-card countdown-card">
-            <EndOfDayCountdown />
+          <div className="streak-countdown-column">
+            <div className="dashboard-card streak-card">
+              <Streak />
+            </div>
+            <div className="dashboard-card countdown-card">
+              <EndOfDayCountdown />
+            </div>
           </div>
         </div>
         
