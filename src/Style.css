@@ -45,6 +45,26 @@
     display: block; /* Remove any inline spacing */
 }
 
+/* Sleeping state: wider horizontal image, breathing animation */
+.pet-sleeping {
+    animation: breathe 3s ease-in-out infinite !important;
+}
+
+.pet-sleeping img {
+    width: 45vw !important;
+    object-fit: contain !important;
+    margin-top: 0 !important;
+}
+
+@keyframes breathe {
+    0%, 100% {
+        transform: scaleY(1) scaleX(1);
+    }
+    50% {
+        transform: scaleY(1.04) scaleX(1.02);
+    }
+}
+
 /* Food Shop */
 .food-shop {
     position: absolute;
@@ -177,6 +197,10 @@
     /* Reduce the pet size */
     .pet-container img {
         width: 20vw;
+    }
+
+    .pet-sleeping img {
+        width: 35vw !important;
     }
 
     /* Reduce the food shop size */

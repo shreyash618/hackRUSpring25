@@ -46,23 +46,27 @@ const Checklist = () => {
         }
     };
 
-    const refreshAll = () => {
-        fetchTodayTasks();
-        fetchOverdueTasks();
-        fetchUpcomingTasks();
-        fetchMoney();
+    const refreshAll = async () => {
+        await Promise.all([
+            fetchTodayTasks(),
+            fetchOverdueTasks(),
+            fetchUpcomingTasks(),
+            fetchMoney(),
+        ]);
     };
 
     const toggleCheck = async (taskId, isCompleted, taskDifficulty) => {
         try {
-            // Optimistically update both today and overdue lists
+            // Optimistically update all three lists
             const updateList = (prevTasks) =>
                 prevTasks.map(task =>
                     task.id === taskId ? { ...task, task_completed: isCompleted } : task
                 );
             setTodayTasks(updateList);
             setOverdueTasks(updateList);
+            setUpcomingTasks(updateList);
 
+            // Wait for backend to confirm
             const response = await axios.post(`${API_URL}/tasks/complete`, {
                 task_id: taskId,
                 completed: isCompleted,
@@ -72,13 +76,13 @@ const Checklist = () => {
                 setMoney(response.data.new_money);
             }
 
-            // Always re-fetch everything after a toggle to stay in sync
-            refreshAll();
+            // Re-fetch everything from backend to ensure we're in sync
+            await refreshAll();
             // Notify other components (calendar, chart, streak) to refresh
             window.dispatchEvent(new Event("tasks-changed"));
         } catch (error) {
             console.error("Error updating task:", error);
-            refreshAll();
+            await refreshAll();
         }
     };
 

@@ -4,7 +4,7 @@ eventlet.monkey_patch()
 import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import StaticPool
 from flask_cors import CORS
 from datetime import date
 from flask_socketio import SocketIO, emit
@@ -18,7 +18,10 @@ socketio = SocketIO(app, cors_allowed_origins="*")  # Enable WebSocket support
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'tasks.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'poolclass': NullPool}
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    'poolclass': StaticPool,
+    'connect_args': {'check_same_thread': False},
+}
 db = SQLAlchemy(app)
 
 # Define the Task model

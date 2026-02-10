@@ -11,8 +11,8 @@ const GamePage = () => {
   const [petImage, setPetImage] = useState("/pet_nah.png");
   const [isEating, setIsEating] = useState(false);
   const [isQueasy, setIsQueasy] = useState(false);
-  const [isSleeping, setIsSleeping] = useState(false);
   const isIframe = window.location !== window.parent.location;
+  const isSleeping = hunger >= 100 && !isEating && !isQueasy;
 
   const foodOptions = [
     { name: "🍏 Apple", cost: 5, hungerIncrease: 5 },
@@ -60,23 +60,22 @@ const GamePage = () => {
   // Update pet image based on state changes
   useEffect(() => {
     if (!isEating && !isQueasy) {
-      setPetImage(getDefaultImage(hunger));
-      setIsSleeping(hunger >= 100);
+      if (hunger >= 100) {
+        // Start snoring animation
+        setPetImage("/pet_sleeping_no_snores.png");
+        const interval = setInterval(() => {
+          setPetImage((prev) =>
+            prev === "/pet_sleeping_no_snores.png"
+              ? "/pet_sleeping_snores.png"
+              : "/pet_sleeping_no_snores.png"
+          );
+        }, 1500);
+        return () => clearInterval(interval);
+      } else {
+        setPetImage(getDefaultImage(hunger));
+      }
     }
   }, [hunger, isEating, isQueasy]);
-
-  // Snoring animation: alternate images when sleeping
-  useEffect(() => {
-    if (!isSleeping) return;
-    const interval = setInterval(() => {
-      setPetImage((prev) =>
-        prev === "/pet_sleeping_no_snores.png"
-          ? "/pet_sleeping_snores.png"
-          : "/pet_sleeping_no_snores.png"
-      );
-    }, 1500);
-    return () => clearInterval(interval);
-  }, [isSleeping]);
 
   // Save hunger to localStorage
   useEffect(() => {
@@ -100,12 +99,9 @@ const GamePage = () => {
         if (!isEating) {
           setPetImage("/pet_hehe.png");
           setIsEating(true);
-          setIsSleeping(false);
 
           setTimeout(() => {
             setIsEating(false);
-            setPetImage(getDefaultImage(newHunger));
-            setIsSleeping(newHunger >= 100);
           }, 2000);
         }
 
@@ -155,11 +151,11 @@ const GamePage = () => {
 
   // Handle food hover effects
   const handleHover = () => {
-    if (!isEating) setPetImage("/pet_eating.png");
+    if (!isEating && !isSleeping) setPetImage("/pet_eating.png");
   };
 
   const handleHoverLeave = () => {
-    if (!isEating) {
+    if (!isEating && !isSleeping) {
       setPetImage(getDefaultImage(hunger));
     }
   };
@@ -209,8 +205,8 @@ const GamePage = () => {
         ))}
       </div>
 
-      <div className="pet-container">
-        <img id="pet-image" src={petImage} alt="Virtual Pet" onClick={handlePetClick} />
+      <div className={`pet-container ${isSleeping ? "pet-sleeping" : ""}`}>
+        <img id="pet-image" src={petImage} alt="Virtual Pet" onClick={!isSleeping ? handlePetClick : undefined} />
 
         {!isSleeping && (
           <div className="eyes">
