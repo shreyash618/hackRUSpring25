@@ -133,10 +133,12 @@ const GamePage = () => {
   };
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("iframe") === "true") {
-      const navbar = document.querySelector(".navbar");
-      if (navbar) {
-        navbar.style.display = "none"; // Hide the navbar
+    const navbar = document.querySelector(".navbar");
+    if (navbar) {
+      if (params.get("iframe") === "true") {
+        navbar.style.display = "none"; // Hide the navbar in iframe
+      } else {
+        navbar.style.display = "flex"; // Show the navbar when not in iframe
       }
     }
   }, []);
