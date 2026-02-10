@@ -13,8 +13,8 @@ const EndOfDayCountdown = () => {
     );
 
     return (
-        <div className="countdown" style={{ fontSize: "24px", fontFamily: "Arial, sans-serif", backgroundColor: "white", color: "red", borderRadius: '15px', padding: '10px', textAlign: 'center', marginRight: '60px'}}>
-            <h2 style={{ color: "black" }}>Countdown</h2>
+        <div className="countdown" style={{ fontSize: "20px", fontFamily: "Arial, sans-serif", color: "red", textAlign: 'center', margin: '0'}}>
+            <h3 style={{ color: "black", margin: "0 0 8px 0", fontSize: "1rem" }}>Countdown</h3>
             <Countdown date={midnight} renderer={countdownRenderer} />
         </div>
     );

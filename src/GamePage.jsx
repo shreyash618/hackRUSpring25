@@ -132,13 +132,25 @@ const GamePage = () => {
     }
   };
   useEffect(() => {
+    // Hide navbar when in iframe mode
     const params = new URLSearchParams(window.location.search);
     const navbar = document.querySelector(".navbar");
     if (navbar) {
       if (params.get("iframe") === "true") {
-        navbar.style.display = "none"; // Hide the navbar in iframe
+        navbar.style.display = "none !important"; // Hide the navbar in iframe
+        navbar.style.visibility = "hidden"; // Additional hiding method
       } else {
         navbar.style.display = "flex"; // Show the navbar when not in iframe
+        navbar.style.visibility = "visible";
+      }
+    }
+    
+    // Also check if we're actually inside an iframe
+    if (window.self !== window.top) {
+      // We're in an iframe
+      if (navbar) {
+        navbar.style.display = "none !important";
+        navbar.style.visibility = "hidden";
       }
     }
   }, []);

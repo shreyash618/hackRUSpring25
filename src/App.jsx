@@ -43,10 +43,13 @@ function App() {
 };
 
 
+  // Check if we're in iframe mode and hide navbar accordingly
+  const isInIframe = window.location.search.includes('iframe=true') || window.self !== window.top;
+  
   return (
     <Router>
-      <div className="app-container">
-        <Navbar />
+      <div className={`app-container ${isInIframe ? 'iframe-mode' : ''}`}>
+        {!isInIframe && <Navbar />}
         <Routes>
           <Route path="/" element={<Home 
           taskName={taskName} setTaskName={setTaskName}
@@ -119,15 +122,13 @@ function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, se
           <CalendarComponent />
         </div>
         
-        {/* Left Column - Bottom Row: Progress, Streak, Countdown */}
+        {/* Left Column - Bottom Row: Progress, Streak+Countdown combined */}
         <div className="bottom-row-wrapper">
           <div className="dashboard-card progress-card">
             <DonutPieChart />
           </div>
-          <div className="dashboard-card streak-card">
+          <div className="dashboard-card streak-countdown-card">
             <Streak />
-          </div>
-          <div className="dashboard-card countdown-card">
             <EndOfDayCountdown />
           </div>
         </div>

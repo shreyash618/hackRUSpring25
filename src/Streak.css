@@ -3,14 +3,11 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background-color: transparent; /* Transparent since it's in a card already */
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 150px;
-    height: 150px;
-    gap: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd;
+    width: 100%;
+    gap: 8px;
+    padding: 0;
 }
 
 .streak-container h3 {

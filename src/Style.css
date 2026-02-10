@@ -40,8 +40,8 @@
 .pet-container img {
     width: 30vw;
     object-fit: cover;
-    object-position: center bottom; /* Focus on bottom, crop from top */
-    margin-top: -20%; /* Crop top portion - adjust this value to crop more/less */
+    object-position: center center; /* Center the image to show the head */
+    margin-top: -5%; /* Minimal crop - just remove a tiny bit from top */
     display: block; /* Remove any inline spacing */
 }
 

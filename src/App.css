@@ -286,7 +286,7 @@ iframe {
   width: 90%;
   max-width: 1200px;
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Two columns */
+  grid-template-columns: 0.6fr 1.4fr; /* Narrower left column for calendar, wider right for to-do */
   grid-template-rows: auto auto; /* Two rows */
   gap: 20px;
   margin-top: 16px;
@@ -324,12 +324,12 @@ iframe {
   font-family: inherit;
 }
 
-/* Bottom row wrapper - contains Progress, Streak, Countdown side by side */
+/* Bottom row wrapper - contains Progress and Streak+Countdown side by side */
 .bottom-row-wrapper {
   grid-column: 1; /* Left column */
   grid-row: 2; /* Bottom row */
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr; /* Two items: Progress and Streak+Countdown */
   gap: 20px;
 }
 
@@ -342,14 +342,22 @@ iframe {
   flex-direction: column;
 }
 
-/* Make bottom row cards taller to fit countdown better */
-.progress-card,
-.streak-card,
-.countdown-card {
+/* Make bottom row cards taller */
+.progress-card {
   min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Combined Streak + Countdown card */
+.streak-countdown-card {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
 }
 
 @media (max-width: 768px) {
@@ -369,8 +377,7 @@ iframe {
   }
   
   .progress-card,
-  .streak-card,
-  .countdown-card {
+  .streak-countdown-card {
     min-height: auto;
   }
 }

@@ -96,5 +96,8 @@
   }
   */
 
-/* Only hide navbar when actually inside an iframe (handled by GamePage.jsx) */
-/* Removed fullscreen media query as it was incorrectly hiding navbar */
+/* Hide navbar when in iframe mode */
+.app-container.iframe-mode .navbar {
+  display: none !important;
+  visibility: hidden !important;
+}
