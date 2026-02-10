@@ -179,7 +179,7 @@ const GamePage = () => {
     }, 2000);
   };
 
-  // Handle eye movement
+  // Handle eye movement — offset scales with viewport so pupils stay inside eyes
   const handleMouseMove = (e) => {
     const container = e.currentTarget.getBoundingClientRect();
     const centerX = container.left + container.width / 2;
@@ -187,7 +187,8 @@ const GamePage = () => {
     const dx = e.clientX - centerX;
     const dy = e.clientY - centerY;
     const angle = Math.atan2(dy, dx);
-    const maxOffset = 20;
+    // Eyes are 6vw; cap pupil travel to ~25% of eye diameter
+    const maxOffset = Math.min(window.innerWidth * 0.015, 16);
     const x = Math.cos(angle) * maxOffset;
     const y = Math.sin(angle) * maxOffset;
     setPupilPosition({ x, y });

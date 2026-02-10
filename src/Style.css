@@ -30,18 +30,16 @@
 /* Pet Container */
 .pet-container {
     position: absolute;
-    bottom: 4%;
+    bottom: 10%;
     text-align: center;
     animation: bounce 2s infinite; /* Make pet bounce slightly */
     overflow: hidden; /* Crop the image */
     height: auto;
 }
 
-/* On taller viewports (full /game page), nudge pet up so it sits on the rug */
-@media (min-height: 600px) {
-    .pet-container {
-        bottom: 8%;
-    }
+/* Sleeping pet sits lower on the rug */
+.pet-sleeping {
+    bottom: 4% !important;
 }
 
 .pet-container img {
