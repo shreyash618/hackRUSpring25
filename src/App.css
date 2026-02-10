@@ -2,8 +2,8 @@
 body, html {
   margin: 0;
   padding: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
   font-family: 'Arial', sans-serif;
   overflow-x: hidden;
 }
@@ -182,7 +182,8 @@ iframe {
   align-items: center;
   gap: 32px;
   width: 100%;
-  padding: 24px 0 40px;
+  padding: 24px 16px 40px; /* Added horizontal padding, top padding for navbar spacing */
+  box-sizing: border-box; /* Ensure padding is included in width */
 }
 
 /* Hero title above pet */
@@ -193,6 +194,9 @@ iframe {
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   max-width: 720px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0; /* Ensure it's not cut off at top */
 }
 
 .hero-heading {

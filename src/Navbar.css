@@ -6,7 +6,8 @@
   justify-content: space-around; /* Space out brand/logo and nav links */
   align-items: center; /* Vertically align items */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-  position: relative; /* Ensure proper positioning */
+  position: sticky; /* Stick to top when scrolling */
+  top: 0; /* Stick at the top */
   z-index: 1000; /* Keep navbar above other content */
   width: 100%; /* Full width */
   flex-shrink: 0; /* Don't shrink the navbar */
