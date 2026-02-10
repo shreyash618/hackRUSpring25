@@ -6,26 +6,35 @@
     background-color: transparent; /* Transparent since it's in a card already */
     border-radius: 10px;
     width: 100%;
-    gap: 8px;
+    gap: 12px;
     padding: 0;
 }
 
 .streak-container h3 {
-  margin: 0; /* Remove default margin */
-  padding-bottom: 5px; /* Adjust spacing if needed */
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
 }
   
 .streak-circle {
   margin: 0;
-  width: 100px;
-  height: 60px;
-  line-height: 60px;
-  border-radius: 12px; /* Changed from circle to rounded rectangle */
-  background-color: #cb72ff;
+  width: 120px;
+  height: 80px;
+  border-radius: 16px; /* More rounded corners */
+  background: linear-gradient(135deg, #cb72ff 0%, #a855f7 100%); /* Gradient background */
   color: white;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  border: 2px solid rgba(72, 72, 72, 0.521);
+  box-shadow: 0 4px 12px rgba(203, 114, 255, 0.3); /* Purple shadow */
+  border: none; /* Remove border for cleaner look */
+  transition: transform 0.2s ease;
+}
+
+.streak-circle:hover {
+  transform: scale(1.05); /* Slight hover effect */
 }

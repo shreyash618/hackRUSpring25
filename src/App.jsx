@@ -122,13 +122,15 @@ function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, se
           <CalendarComponent />
         </div>
         
-        {/* Left Column - Bottom Row: Progress, Streak+Countdown combined */}
+        {/* Left Column - Bottom Row: Progress, Streak, Countdown (stacked vertically in separate cards) */}
         <div className="bottom-row-wrapper">
           <div className="dashboard-card progress-card">
             <DonutPieChart />
           </div>
-          <div className="dashboard-card streak-countdown-card">
+          <div className="dashboard-card streak-card">
             <Streak />
+          </div>
+          <div className="dashboard-card countdown-card">
             <EndOfDayCountdown />
           </div>
         </div>
