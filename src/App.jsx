@@ -16,11 +16,13 @@ function App() {
   const [taskDate, setTaskDate] = useState("");
   const [taskDifficulty, setTaskDifficulty] = useState("");
   const [isAdding, setIsAdding] = useState(false);
+  const [addStatus, setAddStatus] = useState(""); // "success" | "error" | ""
 
   const addTask = async () => {
     if (!taskName.trim() || !taskDate.trim() || !taskDifficulty.trim()) return;
     if (isAdding) return;
     setIsAdding(true);
+    setAddStatus("");
 
     try {
         const response = await fetch(`${API_URL}/add`, {
@@ -38,13 +40,20 @@ function App() {
         if (response.ok) {
             setTaskName(""); setTaskDate(""); setTaskDifficulty(""); // Clear input fields
             window.dispatchEvent(new Event("tasks-changed")); // Notify all components
+            setAddStatus("success");
+        } else if (response.status === 409) {
+            setAddStatus("error");
+            alert("A task with this name already exists on that date!");
         } else {
+            setAddStatus("error");
             console.error(data.error);
         }
     } catch (error) {
+        setAddStatus("error");
         console.error("Error adding task:", error);
     } finally {
         setIsAdding(false);
+        setTimeout(() => setAddStatus(""), 1500);
     }
 };
 
@@ -61,7 +70,7 @@ function App() {
           taskName={taskName} setTaskName={setTaskName}
           taskDate={taskDate} setTaskDate={setTaskDate}
           taskDifficulty={taskDifficulty} setTaskDifficulty={setTaskDifficulty}
-          addTask={addTask} isAdding={isAdding}
+          addTask={addTask} isAdding={isAdding} addStatus={addStatus}
           />} />
           <Route path="/game" element={<GamePage isIframe={false} />} />
           <Route path='/about' element={<About/>}/>
@@ -71,7 +80,7 @@ function App() {
   );
 }
 
-function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, setTaskDifficulty, addTask, isAdding }){
+function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, setTaskDifficulty, addTask, isAdding, addStatus }){
   return (
     <div className="main-container">
       {/* Pet iframe on left, title + task form stacked on right */}
@@ -115,7 +124,13 @@ function Home({ taskName, setTaskName, taskDate, setTaskDate, taskDifficulty, se
                 <option value="easy">Easy</option>
                 <option value="hard">Hard</option>
               </select>
-              <button onClick={addTask} disabled={isAdding}>{isAdding ? "Adding..." : "Add Task"}</button>
+              <button
+                className={`add-task-btn ${addStatus === "success" ? "btn-success" : ""} ${addStatus === "error" ? "btn-error" : ""}`}
+                onClick={addTask}
+                disabled={isAdding}
+              >
+                {isAdding ? "Adding..." : addStatus === "success" ? "Added!" : addStatus === "error" ? "Try Again" : "Add Task"}
+              </button>
             </div>
           </div>
         </div>

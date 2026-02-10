@@ -11,8 +11,30 @@ const GamePage = () => {
   const [petImage, setPetImage] = useState("/pet_nah.png");
   const [isEating, setIsEating] = useState(false);
   const [isQueasy, setIsQueasy] = useState(false);
+  const [showRules, setShowRules] = useState(false);
   const isIframe = window.location !== window.parent.location;
-  const isSleeping = hunger >= 100 && !isEating && !isQueasy;
+
+  // Pet sleeps until the next morning once fully fed
+  const [sleepingSince, setSleepingSince] = useState(() => localStorage.getItem("sleepingSince") || null);
+
+  const isNextDay = () => {
+    if (!sleepingSince) return false;
+    const sleptDate = new Date(sleepingSince);
+    const now = new Date();
+    return now.getDate() !== sleptDate.getDate() || now.getMonth() !== sleptDate.getMonth();
+  };
+
+  // Wake up if it's a new day
+  useEffect(() => {
+    if (sleepingSince && isNextDay()) {
+      setSleepingSince(null);
+      localStorage.removeItem("sleepingSince");
+      setHunger(80); // Wake up well-rested but not full
+      localStorage.setItem("hunger", 80);
+    }
+  }, []);
+
+  const isSleeping = (hunger >= 100 || sleepingSince) && !isEating && !isQueasy;
 
   const foodOptions = [
     { name: "🍏 Apple", cost: 5, hungerIncrease: 5 },
@@ -22,7 +44,7 @@ const GamePage = () => {
 
   // Get the default pet image for a given hunger level
   const getDefaultImage = (h) => {
-    if (h >= 100) return "/pet_sleeping_no_snores.png";
+    if (h >= 100 || sleepingSince) return "/pet_sleeping_no_snores.png";
     if (h >= 80) return "/pet_hehe.png";
     if (h >= 50) return "/pet_happy.png";
     if (h >= 25) return "/pet_nah.png";
@@ -31,7 +53,7 @@ const GamePage = () => {
 
   // Get the status text for a given hunger level
   const getStatusText = (h) => {
-    if (h >= 100) return "Your pet is napping happily";
+    if (h >= 100 || sleepingSince) return "Your pet is napping happily";
     if (h >= 80) return "Your pet is full!";
     if (h >= 50) return "Your pet is feeling good!";
     if (h >= 25) return "Your pet is hungry";
@@ -60,7 +82,7 @@ const GamePage = () => {
   // Update pet image based on state changes
   useEffect(() => {
     if (!isEating && !isQueasy) {
-      if (hunger >= 100) {
+      if (hunger >= 100 || sleepingSince) {
         // Start snoring animation
         setPetImage("/pet_sleeping_no_snores.png");
         const interval = setInterval(() => {
@@ -75,7 +97,7 @@ const GamePage = () => {
         setPetImage(getDefaultImage(hunger));
       }
     }
-  }, [hunger, isEating, isQueasy]);
+  }, [hunger, isEating, isQueasy, sleepingSince]);
 
   // Save hunger to localStorage
   useEffect(() => {
@@ -117,17 +139,35 @@ const GamePage = () => {
     }
   };
 
-  // Gradual hunger decrease: lose 15 hunger every 10 minutes
+  // Track when pet falls asleep
+  useEffect(() => {
+    if (hunger >= 100 && !sleepingSince) {
+      const now = new Date().toISOString();
+      setSleepingSince(now);
+      localStorage.setItem("sleepingSince", now);
+    }
+  }, [hunger]);
+
+  // Gradual hunger decrease: 15/10min awake, 2/10min sleeping
   useEffect(() => {
     const interval = setInterval(() => {
       setHunger((prev) => {
-        const newHunger = Math.max(prev - 15, 0);
+        // Don't lose hunger while sleeping (only lose 2 per tick)
+        const loss = sleepingSince ? 2 : 15;
+        const newHunger = Math.max(prev - loss, 0);
         localStorage.setItem("hunger", newHunger);
+
+        // If hunger drops below 100 while sleeping, wake up
+        if (newHunger < 100 && sleepingSince) {
+          setSleepingSince(null);
+          localStorage.removeItem("sleepingSince");
+        }
+
         return newHunger;
       });
     }, 600000); // 10 minutes
     return () => clearInterval(interval);
-  }, []);
+  }, [sleepingSince]);
 
   // Handle pet click (show queasy effect)
   const handlePetClick = () => {
@@ -189,6 +229,28 @@ const GamePage = () => {
 
   return (
     <div className="game-container" onMouseMove={handleMouseMove}>
+      {/* Red question-mark help button */}
+      <button className="rules-btn" onClick={() => setShowRules(true)} title="Game Rules">?</button>
+
+      {/* Rules overlay */}
+      {showRules && (
+        <div className="rules-overlay" onClick={() => setShowRules(false)}>
+          <div className="rules-card" onClick={(e) => e.stopPropagation()}>
+            <h2>How to Play</h2>
+            <ul>
+              <li><strong>Easy tasks</strong> earn you <strong>10 coins</strong>. <strong>Hard tasks</strong> earn <strong>20 coins</strong>.</li>
+              <li>Complete <strong>all of today's tasks</strong> for a <strong>+50 coin bonus!</strong></li>
+              <li>Unchecking a task deducts the coins you earned from it (minimum 0).</li>
+              <li>Use coins to <strong>feed your pet</strong> and raise its Satisfaction Level.</li>
+              <li>While <strong>awake</strong>, your pet loses <strong>15 hunger every 10 min</strong>.</li>
+              <li>Feed your pet until it's completely full and it will <strong>fall asleep until the next morning</strong>.</li>
+              <li>While <strong>sleeping</strong>, hunger drops very slowly (<strong>2 per 10 min</strong>), so your pet stays happy!</li>
+            </ul>
+            <button className="rules-close-btn" onClick={() => setShowRules(false)}>Got it!</button>
+          </div>
+        </div>
+      )}
+
       <div className="money-container">
         <p>Coins: <span>{money}</span> 🪙</p>
       </div>

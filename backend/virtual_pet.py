@@ -166,10 +166,18 @@ def complete_task():
     if task:
         task.task_completed = completed
         reward = 10 if task.task_difficulty == "easy" else 20
+        bonus = 0
 
         if completed:
             # Earn coins for completing
             user.money += reward
+
+            # Check if ALL of today's tasks are now completed -> +50 bonus
+            today = date.today().strftime('%Y-%m-%d')
+            todays_tasks = Task.query.filter_by(task_date=today).all()
+            if todays_tasks and all(t.task_completed for t in todays_tasks):
+                bonus = 50
+                user.money += bonus
         else:
             # Lose coins for unchecking, but never go below 0
             user.money = max(user.money - reward, 0)
@@ -184,7 +192,7 @@ def complete_task():
             'task_completed': completed
         }, namespace='/')
 
-        return jsonify({"message": "Task updated successfully", "new_money": user.money}), 200
+        return jsonify({"message": "Task updated successfully", "new_money": user.money, "bonus": bonus}), 200
     return jsonify({"error": "Task not found"}), 404
 
 # Spend money (used by pet feeding)

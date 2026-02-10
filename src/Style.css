@@ -30,7 +30,7 @@
 /* Pet Container */
 .pet-container {
     position: absolute;
-    bottom: 10%;
+    bottom: 4%;
     text-align: center;
     animation: bounce 2s infinite; /* Make pet bounce slightly */
     overflow: hidden; /* Crop the image */
@@ -185,6 +185,116 @@
     transform: translate(-50%, -50%);
     border-radius: 50%;
     border: 0.5vw solid #6d6875;
+}
+
+/* Rules help button */
+.rules-btn {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e53935;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 900;
+    border: 2px solid #fff;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(229, 57, 53, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-family: 'Georgia', serif;
+}
+
+.rules-btn:hover {
+    transform: scale(1.12);
+    box-shadow: 0 4px 16px rgba(229, 57, 53, 0.6);
+}
+
+/* Rules overlay backdrop */
+.rules-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    animation: rulesFadeIn 0.2s ease-out;
+}
+
+@keyframes rulesFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Rules card */
+.rules-card {
+    background: #fffde7;
+    border: 3px solid #f9a825;
+    border-radius: 16px;
+    padding: 28px 32px;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: relative;
+    animation: rulesSlideIn 0.25s ease-out;
+}
+
+@keyframes rulesSlideIn {
+    from { transform: translateY(20px) scale(0.95); opacity: 0; }
+    to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.rules-card h2 {
+    margin: 0 0 14px 0;
+    font-size: 20px;
+    color: #4e342e;
+    text-align: center;
+}
+
+.rules-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 18px 0;
+}
+
+.rules-card ul li {
+    padding: 6px 0;
+    font-size: 14px;
+    color: #5d4037;
+    line-height: 1.5;
+    border-bottom: 1px solid #f0e68c;
+}
+
+.rules-card ul li:last-child {
+    border-bottom: none;
+}
+
+.rules-card ul li strong {
+    color: #e65100;
+}
+
+.rules-close-btn {
+    display: block;
+    margin: 0 auto;
+    background: #e53935;
+    color: #fff;
+    border: none;
+    padding: 8px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.rules-close-btn:hover {
+    background: #c62828;
 }
 
 /* 📱 Small Screen (max-height: 600px) - Shrink Everything */

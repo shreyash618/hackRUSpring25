@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { io } from "socket.io-client";
+import confetti from "canvas-confetti";
 import "./Checklist.css"; // Importing the CSS file
 import { API_URL } from "./config";
 
@@ -9,6 +10,7 @@ const Checklist = () => {
     const [overdueTasks, setOverdueTasks] = useState([]);
     const [upcomingTasks, setUpcomingTasks] = useState([]);
     const [money, setMoney] = useState(0);
+    const [showBonus, setShowBonus] = useState(false);
 
     const fetchTodayTasks = async () => {
         try {
@@ -76,6 +78,15 @@ const Checklist = () => {
                 setMoney(response.data.new_money);
             }
 
+            // Show bonus celebration if all today's tasks completed
+            if (response.data.bonus && response.data.bonus > 0) {
+                setShowBonus(true);
+                // Fire confetti bursts
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                setTimeout(() => confetti({ particleCount: 60, spread: 100, origin: { y: 0.5 } }), 300);
+                setTimeout(() => setShowBonus(false), 5000);
+            }
+
             // Re-fetch everything from backend to ensure we're in sync
             await refreshAll();
             // Notify other components (calendar, chart, streak) to refresh
@@ -114,6 +125,18 @@ const Checklist = () => {
         <div className="checklist-container">
             <h2 className="checklist-title">To-Do List</h2>
             <p className="money-display">Coins: <span>{money}</span> 🪙</p>
+
+            {showBonus && (
+                <div className="bonus-overlay" onClick={() => setShowBonus(false)}>
+                    <div className="bonus-card">
+                        <div className="bonus-emoji">🎉🏆🎉</div>
+                        <h3 className="bonus-title">Congratulations!</h3>
+                        <p className="bonus-text">You completed all of today's tasks!</p>
+                        <p className="bonus-coins">+50 coins added to your account!</p>
+                        <button className="bonus-dismiss" onClick={() => setShowBonus(false)}>Awesome!</button>
+                    </div>
+                </div>
+            )}
 
             {/* Today's Tasks */}
             <div className="section-heading-row">

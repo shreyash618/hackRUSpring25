@@ -202,14 +202,18 @@ iframe {
   flex: 1 1 480px;
   min-width: 320px;
   height: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .game-iframe {
   width: 100%;
-  height: 100%;
+  height: calc(100% + 8px); /* Slightly taller to crop white edge */
+  margin-top: -4px; /* Shift up to crop top white pixels */
   border-radius: 16px;
   border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  display: block;
 }
 
 /* Right column: Title stacked on top of form */
@@ -292,11 +296,40 @@ iframe {
   border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  transition: 0.3s;
+  transition: background-color 0.3s, transform 0.15s;
 }
 
 .task-form-container button:hover {
   background-color: #45a049;
+}
+
+.task-form-container button:active {
+  transform: scale(0.96);
+}
+
+/* Button flash states */
+.add-task-btn.btn-success {
+  background-color: #2e7d32 !important;
+  animation: btnFlash 0.4s ease-out;
+}
+
+.add-task-btn.btn-error {
+  background-color: #e53935 !important;
+  animation: btnShake 0.4s ease-out;
+}
+
+@keyframes btnFlash {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+@keyframes btnShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
 }
 
 /* Dashboard section: 2-column layout */

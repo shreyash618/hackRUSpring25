@@ -95,3 +95,80 @@
     white-space: nowrap;
 }
 
+/* Bonus celebration overlay */
+.bonus-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: bonusFadeIn 0.25s ease-out;
+}
+
+@keyframes bonusFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.bonus-card {
+    background: linear-gradient(135deg, #fffde7, #fff9c4);
+    border: 3px solid #ffa726;
+    border-radius: 20px;
+    padding: 32px 40px;
+    text-align: center;
+    max-width: 360px;
+    width: 85%;
+    box-shadow: 0 8px 40px rgba(255, 152, 0, 0.4);
+    animation: bonusBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes bonusBounce {
+    0% { transform: scale(0.5) translateY(30px); opacity: 0; }
+    60% { transform: scale(1.05) translateY(-5px); }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.bonus-emoji {
+    font-size: 40px;
+    margin-bottom: 8px;
+}
+
+.bonus-title {
+    margin: 0 0 6px 0;
+    font-size: 22px;
+    color: #4e342e;
+    font-weight: 800;
+}
+
+.bonus-text {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    color: #5d4037;
+}
+
+.bonus-coins {
+    margin: 8px 0 16px 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #e65100;
+}
+
+.bonus-dismiss {
+    background: #ffa726;
+    color: #fff;
+    border: none;
+    padding: 10px 32px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.bonus-dismiss:hover {
+    background: #fb8c00;
+    transform: scale(1.05);
+}
+
