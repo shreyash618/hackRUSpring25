@@ -202,18 +202,14 @@ iframe {
   flex: 1 1 480px;
   min-width: 320px;
   height: 100%;
-  overflow: hidden;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .game-iframe {
   width: 100%;
-  height: calc(100% + 8px); /* Slightly taller to crop white edge */
-  margin-top: -4px; /* Shift up to crop top white pixels */
+  height: 100%;
   border-radius: 16px;
   border: none;
-  display: block;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* Right column: Title stacked on top of form */
