@@ -101,19 +101,23 @@ const Checklist = () => {
         <div className="checklist-container">
             <h2 className="checklist-title">To-Do List</h2>
             <p className="money-display">Coins: <span>{money}</span> 🪙</p>
-            <ul className="checklist">
-                {tasks.map((task) => (
-                    <li key={task.id} className={`task-item ${task.task_completed ? "completed" : ""}`}>
-                        <input
-                            type="checkbox"
-                            checked={task.task_completed}
-                            onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
-                            className="checkbox"
-                        />
-                        <span>{task.task_name} <span className="difficulty">({task.task_difficulty})</span></span>
-                    </li>
-                ))}
-            </ul>
+            {tasks.length === 0 ? (
+                <p className="empty-tasks-message">No tasks added yet. Add a task above to get started!</p>
+            ) : (
+                <ul className="checklist">
+                    {tasks.map((task) => (
+                        <li key={task.id} className={`task-item ${task.task_completed ? "completed" : ""}`}>
+                            <input
+                                type="checkbox"
+                                checked={task.task_completed}
+                                onChange={(e) => toggleCheck(task.id, e.target.checked, task.task_difficulty)}
+                                className="checkbox"
+                            />
+                            <span>{task.task_name} <span className="difficulty">({task.task_difficulty})</span></span>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 };

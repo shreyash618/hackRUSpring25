@@ -8,6 +8,7 @@ import { API_URL } from "./config";
 const DonutPieChart = () => {
   const [completedTasks, setCompletedTasks] = useState(0);
   const [uncompletedTasks, setUncompletedTasks] = useState(0);
+  const [totalTasks, setTotalTasks] = useState(0);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -17,6 +18,7 @@ const DonutPieChart = () => {
         const completed = tasks.filter((task) => task.task_completed).length;
         setCompletedTasks(completed);
         setUncompletedTasks(tasks.length - completed);
+        setTotalTasks(tasks.length);
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
@@ -24,13 +26,15 @@ const DonutPieChart = () => {
     fetchTasks();
   }, []);
 
+  const isEmpty = totalTasks === 0;
+
   const data = {
-    labels: ["Completed", "Uncompleted"],
+    labels: isEmpty ? ["No Tasks"] : ["Completed", "Uncompleted"],
     datasets: [
       {
-        data: [completedTasks, uncompletedTasks],
-        backgroundColor: ["#FF6B6B", "#4D96FF"], // Coral Pink & Blue
-        borderColor: ["#D64040", "#3562A5"], // Darker borders
+        data: isEmpty ? [1] : [completedTasks, uncompletedTasks],
+        backgroundColor: isEmpty ? ["#d4d4d4"] : ["#FF6B6B", "#4D96FF"],
+        borderColor: isEmpty ? ["#bbb"] : ["#D64040", "#3562A5"],
         borderWidth: 2,
       },
     ],
@@ -42,6 +46,7 @@ const DonutPieChart = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
+      tooltip: { enabled: !isEmpty },
     },
   };
 
@@ -49,8 +54,11 @@ const DonutPieChart = () => {
     <div className="donut-chart-wrapper">
       <h4 className="progress-title">Progress</h4>
       <Doughnut data={data} options={options} />
-      <div className="donut-label">
-        Tasks Completed:  {completedTasks} Remaining: {uncompletedTasks}
+      <div className={`donut-label ${isEmpty ? "donut-label-empty" : ""}`}>
+        {isEmpty
+          ? "No tasks added yet"
+          : `Tasks Completed: ${completedTasks}  Remaining: ${uncompletedTasks}`
+        }
       </div>
     </div>
   );
