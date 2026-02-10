@@ -11,6 +11,7 @@ const GamePage = () => {
   const [petImage, setPetImage] = useState("/pet_nah.png");
   const [isEating, setIsEating] = useState(false);
   const [isQueasy, setIsQueasy] = useState(false);
+  const [isSleeping, setIsSleeping] = useState(false);
   const isIframe = window.location !== window.parent.location;
 
   const foodOptions = [
@@ -18,6 +19,24 @@ const GamePage = () => {
     { name: "🥕 Carrot", cost: 10, hungerIncrease: 10 },
     { name: "🍖 Meat", cost: 20, hungerIncrease: 25 },
   ];
+
+  // Get the default pet image for a given hunger level
+  const getDefaultImage = (h) => {
+    if (h >= 100) return "/pet_sleeping_no_snores.png";
+    if (h >= 80) return "/pet_hehe.png";
+    if (h >= 50) return "/pet_happy.png";
+    if (h >= 25) return "/pet_nah.png";
+    return "/pet_sad.png";
+  };
+
+  // Get the status text for a given hunger level
+  const getStatusText = (h) => {
+    if (h >= 100) return "Your pet is napping happily";
+    if (h >= 80) return "Your pet is full!";
+    if (h >= 50) return "Your pet is feeling good!";
+    if (h >= 25) return "Your pet is hungry";
+    return "Your pet is starving!";
+  };
 
   // Fetch money from backend on mount + listen for updates
   useEffect(() => {
@@ -41,9 +60,23 @@ const GamePage = () => {
   // Update pet image based on state changes
   useEffect(() => {
     if (!isEating && !isQueasy) {
-      setPetImage(hunger <= 25 ? "/pet_sad.png" : hunger <= 65 ? "/pet_nah.png" : "/pet_happy.png");
+      setPetImage(getDefaultImage(hunger));
+      setIsSleeping(hunger >= 100);
     }
   }, [hunger, isEating, isQueasy]);
+
+  // Snoring animation: alternate images when sleeping
+  useEffect(() => {
+    if (!isSleeping) return;
+    const interval = setInterval(() => {
+      setPetImage((prev) =>
+        prev === "/pet_sleeping_no_snores.png"
+          ? "/pet_sleeping_snores.png"
+          : "/pet_sleeping_no_snores.png"
+      );
+    }, 1500);
+    return () => clearInterval(interval);
+  }, [isSleeping]);
 
   // Save hunger to localStorage
   useEffect(() => {
@@ -67,10 +100,12 @@ const GamePage = () => {
         if (!isEating) {
           setPetImage("/pet_hehe.png");
           setIsEating(true);
+          setIsSleeping(false);
 
           setTimeout(() => {
             setIsEating(false);
-            setPetImage(newHunger <= 25 ? "/pet_sad.png" : newHunger <= 65 ? "/pet_nah.png" : "/pet_happy.png");
+            setPetImage(getDefaultImage(newHunger));
+            setIsSleeping(newHunger >= 100);
           }, 2000);
         }
 
@@ -125,7 +160,7 @@ const GamePage = () => {
 
   const handleHoverLeave = () => {
     if (!isEating) {
-      setPetImage(hunger <= 25 ? "/pet_sad.png" : hunger <= 65 ? "/pet_nah.png" : "/pet_happy.png");
+      setPetImage(getDefaultImage(hunger));
     }
   };
   useEffect(() => {
@@ -177,18 +212,18 @@ const GamePage = () => {
       <div className="pet-container">
         <img id="pet-image" src={petImage} alt="Virtual Pet" onClick={handlePetClick} />
 
-        <div className="eyes">
-          <div className="eye">
-            <div className="ball" style={{ transform: `translate(${pupilPosition.x}px, ${pupilPosition.y}px)` }}></div>
+        {!isSleeping && (
+          <div className="eyes">
+            <div className="eye">
+              <div className="ball" style={{ transform: `translate(${pupilPosition.x}px, ${pupilPosition.y}px)` }}></div>
+            </div>
+            <div className="eye">
+              <div className="ball" style={{ transform: `translate(${pupilPosition.x}px, ${pupilPosition.y}px)` }}></div>
+            </div>
           </div>
-          <div className="eye">
-            <div className="ball" style={{ transform: `translate(${pupilPosition.x}px, ${pupilPosition.y}px)` }}></div>
-          </div>
-        </div>
+        )}
 
-        <p id="pet-status">
-          {hunger <= 25 ? "Your pet is starving!" : hunger <= 65 ? "Your pet is still hungry!" : "Your pet is happy!"}
-        </p>
+        <p id="pet-status">{getStatusText(hunger)}</p>
       </div>
 
       <div className="progress-container">
